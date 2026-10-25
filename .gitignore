@@ -1,0 +1,11 @@
+# 编译产物
+bin/
+obj/
+target/
+dist/
+
+# 本机配置与个人数据
+GameDir.local.props
+save_backup/
+.vs/
+*.user

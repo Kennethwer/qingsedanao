@@ -1,0 +1,24 @@
+[package]
+name = "cyanbrain-trainer"
+version = "1.0.0"
+edition = "2024"
+description = "青色大脑 修改器：游戏内插件的安装器与外部控制面板"
+publish = false
+
+[[bin]]
+name = "CyanBrainTrainer"
+path = "src/main.rs"
+
+[dependencies]
+# 只保留用到的：wgpu 渲染（Windows 上走 DX12，兼容性比 OpenGL 好）和兜底字体
+eframe = { version = "=0.36.2", default-features = false, features = ["default_fonts", "wgpu"] }
+rfd = "=0.17.2"
+# 与 eframe/rfd 依赖树里的版本一致，只额外开进程枚举需要的功能
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_Diagnostics_ToolHelp", "Win32_System_SystemInformation"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

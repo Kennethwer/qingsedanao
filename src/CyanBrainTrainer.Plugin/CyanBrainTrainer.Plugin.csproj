@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 游戏的 Assembly-CSharp 按 netstandard 2.1 编译，插件保持一致 -->
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>CyanBrainTrainer.Plugin</AssemblyName>
+    <RootNamespace>CyanBrainTrainer</RootNamespace>
+    <DebugType>embedded</DebugType>
+    <ManagedDir>$(GameDir)\CYANBRAIN_Data\Managed</ManagedDir>
+    <!-- BepInEx 引用随仓库走，游戏里卸载了 BepInEx 也能编译 -->
+    <BepInExCore>$(MSBuildThisFileDirectory)..\..\third_party\BepInEx_5.4.23.5\BepInEx\core</BepInExCore>
+    <PluginDeployDir>$(GameDir)\BepInEx\plugins\CyanBrainTrainer</PluginDeployDir>
+    <!-- 开发时编译完直接复制进游戏（游戏里已装 BepInEx 时）；控制软件打包时会关掉 -->
+    <DeployToGame Condition="'$(DeployToGame)' == '' And Exists('$(GameDir)\BepInEx\core')">true</DeployToGame>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\Protocol.cs" Link="Shared\Protocol.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx" HintPath="$(BepInExCore)\BepInEx.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(BepInExCore)\0Harmony.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="$(ManagedDir)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="UnityEngine" HintPath="$(ManagedDir)\UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(ManagedDir)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="UnityEngine.IMGUIModule" HintPath="$(ManagedDir)\UnityEngine.IMGUIModule.dll" Private="false" />
+    <Reference Include="UnityEngine.TextRenderingModule" HintPath="$(ManagedDir)\UnityEngine.TextRenderingModule.dll" Private="false" />
+    <Reference Include="UnityEngine.Physics2DModule" HintPath="$(ManagedDir)\UnityEngine.Physics2DModule.dll" Private="false" />
+    <Reference Include="UnityEngine.AnimationModule" HintPath="$(ManagedDir)\UnityEngine.AnimationModule.dll" Private="false" />
+    <Reference Include="Unity.InputSystem" HintPath="$(ManagedDir)\Unity.InputSystem.dll" Private="false" />
+    <Reference Include="spine-unity" HintPath="$(ManagedDir)\spine-unity.dll" Private="false" />
+    <Reference Include="spine-csharp" HintPath="$(ManagedDir)\spine-csharp.dll" Private="false" />
+  </ItemGroup>
+
+  <Target Name="CheckGameDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(ManagedDir)\Assembly-CSharp.dll')"
+           Text="找不到游戏的 Managed 目录（$(ManagedDir)）。请在仓库根目录建 GameDir.local.props 指定 GameDir，见 README。" />
+  </Target>
+
+  <!-- 编译后直接复制进游戏的插件目录；游戏开着时 DLL 被占用会复制失败，只给警告 -->
+  <Target Name="DeployToGame" AfterTargets="Build" Condition="'$(DeployToGame)' == 'true'">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(PluginDeployDir)" ContinueOnError="WarnAndContinue" />
+  </Target>
+
+</Project>

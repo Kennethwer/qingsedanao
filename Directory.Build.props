@@ -1,0 +1,9 @@
+<Project>
+  <!-- 本机的游戏目录写在 GameDir.local.props 里（不提交），格式见 README；也可用 dotnet build -p:GameDir=... 覆盖 -->
+  <Import Project="$(MSBuildThisFileDirectory)GameDir.local.props" Condition="Exists('$(MSBuildThisFileDirectory)GameDir.local.props')" />
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+</Project>
